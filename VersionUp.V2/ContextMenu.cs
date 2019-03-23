@@ -6,6 +6,7 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft;
 
 namespace VersionUp.V2
 {
@@ -21,6 +22,8 @@ namespace VersionUp.V2
         public const int CommandBugFix = 0x0200;
         public const int CommandBuild = 0x0300;
 
+        private const string NetFramework = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+        private const string NetCore = "";
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
@@ -105,44 +108,67 @@ namespace VersionUp.V2
         private void UpVersion(int feature = 0, int bugfix = 0, int build = 0)
         {
             Project selProject = GetSelectedProject();
-            string title = "UpVersion V2";
+            string title = "VersionUp V2";
             string message = "Please select the project!";
-            string assemblyVersion = "";
+            Version assemblyVersion;
             string newAssemblyVersion = "";
 
             if (selProject != null)
             {
                 int count = selProject.Properties.Count;
                 try
-                {
-                    assemblyVersion = selProject.Properties.Item("AssemblyVersion").Value.ToString();
-                    var versions = assemblyVersion.Split('.');
+                {                   
+                    assemblyVersion = new Version(selProject.Properties.Item("AssemblyVersion").Value.ToString());
+                    //var PackageTags = selProject.Properties.Item("PackageTags").Value;
+                    //var Product = selProject.Properties.Item("Product").Value;
+                    //var LocalPath = selProject.Properties.Item("LocalPath").Value;
+                    //var SupportedTargetFrameworks = selProject.Properties.Item("SupportedTargetFrameworks").Value;
+                    //var FullPath = selProject.Properties.Item("FullPath").Value;
+                    //var Version = selProject.Properties.Item("Version").Value;
+                    //var TargetFrameworkMoniker = selProject.Properties.Item("TargetFrameworkMoniker").Value;
+                    //var FileVersion = selProject.Properties.Item("FileVersion").Value;
+                    //var TargetFramework = selProject.Properties.Item("TargetFramework").Value;
+                    //var TargetFrameworks = selProject.Properties.Item("TargetFrameworks").Value;
 
-                    int buildItem = int.Parse(versions[versions.Length - 1]);
-                    buildItem += build;
-                    int bugfixItem = int.Parse(versions[versions.Length - 2]);
-                    bugfixItem += bugfix;
-                    int featureItem = int.Parse(versions[versions.Length - 3]);
-                    featureItem += feature;
+
+                    int buildItem = assemblyVersion.Revision + build;
+                    int bugfixItem = assemblyVersion.Build + bugfix;
+                    int featureItem = assemblyVersion.Minor + feature;
  
-                    newAssemblyVersion = $"{versions[0]}.{featureItem}.{bugfixItem}.{buildItem}";
+                    newAssemblyVersion = $"{assemblyVersion.Major}.{featureItem}.{bugfixItem}.{buildItem}";
                     selProject.Properties.Item("AssemblyVersion").Value = newAssemblyVersion;
-                    selProject.Properties.Item("AssemblyFileVersion").Value = newAssemblyVersion;
+                    try
+                    {
+                        selProject.Properties.Item("AssemblyFileVersion").Value = newAssemblyVersion;
+                    }
+                    catch
+                    {
+                        // .NetCore Project doesn't has a property AssemblyFileVersion
+                        selProject.Properties.Item("FileVersion").Value = newAssemblyVersion;
+                        selProject.Properties.Item("Version").Value = newAssemblyVersion; // Package Version
+                    }
+
+                    message = selProject.Name + " " + assemblyVersion.ToString() + " -> " + newAssemblyVersion;
+                    // Show a message box to prove we were here
+                    VsShellUtilities.ShowMessageBox(
+                        this.ServiceProvider,
+                        message,
+                        title,
+                        OLEMSGICON.OLEMSGICON_INFO,
+                        OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 }
-                catch { }
-
-                message = selProject.Name + " " + assemblyVersion + " -> " + newAssemblyVersion;
-
-            }
-
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.ServiceProvider,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                catch (Exception e)
+                {
+                    VsShellUtilities.ShowMessageBox(
+                    this.ServiceProvider,
+                    message,
+                    e.Message,
+                    OLEMSGICON.OLEMSGICON_INFO,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                }
+            }   
         }
 
         /// <summary>
@@ -151,6 +177,13 @@ namespace VersionUp.V2
         /// <returns>Selected project or null.</returns>
         private Project GetSelectedProject()
         {
+            VsShellUtilities.ShowMessageBox(
+                this.ServiceProvider,
+                "Get Selected Project",
+                "Enter",
+                OLEMSGICON.OLEMSGICON_INFO,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             IntPtr hierarchyPointer, selectionContainerPointer;
             Object selectedObject = null;
             IVsMultiItemSelect multiItemSelect;
@@ -172,8 +205,15 @@ namespace VersionUp.V2
                                                      hierarchyPointer,
                                                      typeof(IVsHierarchy)) as IVsHierarchy;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                VsShellUtilities.ShowMessageBox(
+                this.ServiceProvider,
+                "Get Selected Project",
+                e.Message,
+                OLEMSGICON.OLEMSGICON_INFO,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return null;
             }
 
@@ -187,6 +227,13 @@ namespace VersionUp.V2
 
             Project selectedProject = selectedObject as Project;
 
+            VsShellUtilities.ShowMessageBox(
+                this.ServiceProvider,
+                "Get Selected Project - Output",
+                (selectedProject == null).ToString(),
+                OLEMSGICON.OLEMSGICON_INFO,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             return selectedProject;
         }
 
