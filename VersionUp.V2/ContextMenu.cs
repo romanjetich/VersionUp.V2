@@ -22,8 +22,6 @@ namespace VersionUp.V2
         public const int CommandBugFix = 0x0200;
         public const int CommandBuild = 0x0300;
 
-        private const string NetFramework = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
-        private const string NetCore = "";
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
@@ -108,7 +106,7 @@ namespace VersionUp.V2
         private void UpVersion(int feature = 0, int bugfix = 0, int build = 0)
         {
             Project selProject = GetSelectedProject();
-            string title = "VersionUp V2";
+            string title = "UpVersion V2";
             string message = "Please select the project!";
             Version assemblyVersion;
             string newAssemblyVersion = "";
@@ -177,13 +175,6 @@ namespace VersionUp.V2
         /// <returns>Selected project or null.</returns>
         private Project GetSelectedProject()
         {
-            VsShellUtilities.ShowMessageBox(
-                this.ServiceProvider,
-                "Get Selected Project",
-                "Enter",
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             IntPtr hierarchyPointer, selectionContainerPointer;
             Object selectedObject = null;
             IVsMultiItemSelect multiItemSelect;
@@ -205,15 +196,8 @@ namespace VersionUp.V2
                                                      hierarchyPointer,
                                                      typeof(IVsHierarchy)) as IVsHierarchy;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                VsShellUtilities.ShowMessageBox(
-                this.ServiceProvider,
-                "Get Selected Project",
-                e.Message,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return null;
             }
 
@@ -226,14 +210,6 @@ namespace VersionUp.V2
             }
 
             Project selectedProject = selectedObject as Project;
-
-            VsShellUtilities.ShowMessageBox(
-                this.ServiceProvider,
-                "Get Selected Project - Output",
-                (selectedProject == null).ToString(),
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             return selectedProject;
         }
 
