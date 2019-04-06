@@ -3,3 +3,9 @@
 ################################################################################
 
 /.vs/VersionUp.V2/v15/Server/sqlite3
+/VersionUp.V2/bin/Release
+/VersionUp.V2/obj/Release
+/VersionUp.V2/bin
+/VersionUp.V2/obj
+/.vs/VersionUp.V2/v16/.suo
+/.vs/VersionUp.V2/v16/Server/sqlite3

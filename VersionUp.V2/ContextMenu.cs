@@ -106,7 +106,7 @@ namespace VersionUp.V2
         private void UpVersion(int feature = 0, int bugfix = 0, int build = 0)
         {
             Project selProject = GetSelectedProject();
-            string title = "UpVersion V2";
+            string title = "VersionUp V2";
             string message = "Please select the project!";
             Version assemblyVersion;
             string newAssemblyVersion = "";
