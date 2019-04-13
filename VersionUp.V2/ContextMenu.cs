@@ -87,24 +87,27 @@ namespace VersionUp.V2
         /// Initializes the singleton instance of the command.
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        public static void Initialize(Package package)
+        public static void InitializeSingleton(Package package)
         {
             Instance = new ContextMenu(package);
         }
 
         private string GetActiveFilePath(IServiceProvider serviceProvider)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             EnvDTE80.DTE2 applicationObject = serviceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
+            if (applicationObject == null) throw new Exception("Unable access the service object");
             return applicationObject.ActiveDocument.FullName;
         }
         /// <summary>
         /// Updates the assembly version
         /// </summary>
         /// <param name="feature">The value for the feature item.</param>
-        /// <param name="bugfix">The value for the bugfix item.</param>
+        /// <param name="bugfix">The value for the bug fix item.</param>
         /// <param name="build">The value for the build item.</param>
         private void UpVersion(int feature = 0, int bugfix = 0, int build = 0)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             Project selProject = GetSelectedProject();
             string title = "VersionUp V2";
             string message = "Please select the project!";
@@ -175,6 +178,7 @@ namespace VersionUp.V2
         /// <returns>Selected project or null.</returns>
         private Project GetSelectedProject()
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             IntPtr hierarchyPointer, selectionContainerPointer;
             Object selectedObject = null;
             IVsMultiItemSelect multiItemSelect;
@@ -222,16 +226,19 @@ namespace VersionUp.V2
         /// <param name="e">Event args.</param>
         private void MenuFeatureCallback(object sender, EventArgs e)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             this.UpVersion(feature: 1);
         }
 
         private void MenuBugFixCallback(object sender, EventArgs e)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             this.UpVersion(bugfix: 1);
         }
 
         private void MenuBuildCallback(object sender, EventArgs e)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             this.UpVersion(build: 1);
         }
     }
