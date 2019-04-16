@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="VersionUp.V2.cd813173-87ae-4ff2-bd74-0b4d2b84b2b9" Version="1.3.1" Language="en-US" Publisher="Roman Jetich" />
-    <DisplayName>VersionUp.V2</DisplayName>
-    <Description xml:space="preserve">Increase the assembly version of the selected project in the solution via context menu.</Description>
-    <Icon>VersionUpV2_256x256.ico</Icon>
-    <PreviewImage>VersionUpV2_64x64.png</PreviewImage>
-  </Metadata>
-  <Installation>
-    <InstallationTarget Version="[15.0,17.0]" Id="Microsoft.VisualStudio.Community" />
-  </Installation>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
-  </Prerequisites>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-  </Assets>
+    <Metadata>
+        <Identity Id="VersionUp.V2.cd813173-87ae-4ff2-bd74-0b4d2b84b2b9" Version="1.3.2" Language="en-US" Publisher="Roman Jetich" />
+        <DisplayName>VersionUp.V2</DisplayName>
+        <Description xml:space="preserve">Increase the assembly version of the selected project in the solution via context menu.</Description>
+        <Icon>VersionUpV2_256x256.ico</Icon>
+        <PreviewImage>VersionUpV2_64x64.png</PreviewImage>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Version="[15.0,17.0]" Id="Microsoft.VisualStudio.Community" />
+    </Installation>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
 </PackageManifest>

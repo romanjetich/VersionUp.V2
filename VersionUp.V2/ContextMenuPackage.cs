@@ -31,7 +31,7 @@ namespace VersionUp.V2
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [InstalledProductRegistration("VersionUp", "Increases the assembl yversion from context menu", "1.3.1", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("VersionUp", "Increases the assembly version from context menu", "1.3.2", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(ContextMenuPackage.PackageGuidString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -62,7 +62,10 @@ namespace VersionUp.V2
         /// </summary>
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
+            
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             ContextMenu.InitializeSingleton(this);
+            await ContextMenu.Instance.InitializeMenuAsync(this);
             await base.InitializeAsync(cancellationToken, progress);
         }
 

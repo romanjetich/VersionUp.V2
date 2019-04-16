@@ -7,6 +7,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft;
+using EnvDTE80;
+using Task = System.Threading.Tasks.Task;
 
 namespace VersionUp.V2
 {
@@ -46,7 +48,28 @@ namespace VersionUp.V2
 
             this.package = package;
 
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            //OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            //if (commandService != null)
+            //{
+            //    var menuCommandFeature = new CommandID(CommandSet, CommandFeature);
+            //    var menuFeature = new MenuCommand(this.MenuFeatureCallback, menuCommandFeature);
+            //    commandService.AddCommand(menuFeature);
+
+            //    var menuCommandBugFix = new CommandID(CommandSet, CommandBugFix);
+            //    var menuBugFix = new MenuCommand(this.MenuBugFixCallback, menuCommandBugFix);
+            //    commandService.AddCommand(menuBugFix);
+
+            //    var menuCommandBuild = new CommandID(CommandSet, CommandBuild);
+            //    var menuBuild = new MenuCommand(this.MenuBuildCallback, menuCommandBuild);
+            //    commandService.AddCommand(menuBuild);
+            //}
+        }
+
+        public async Task InitializeMenuAsync(AsyncPackage package)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var commandService = await package.GetServiceAsync((typeof(IMenuCommandService))) as OleMenuCommandService;
+
             if (commandService != null)
             {
                 var menuCommandFeature = new CommandID(CommandSet, CommandFeature);
@@ -94,8 +117,8 @@ namespace VersionUp.V2
 
         private string GetActiveFilePath(IServiceProvider serviceProvider)
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-            EnvDTE80.DTE2 applicationObject = serviceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
+            ThreadHelper.ThrowIfNotOnUIThread();
+            DTE2 applicationObject = serviceProvider.GetService(typeof(DTE)) as DTE2;
             if (applicationObject == null) throw new Exception("Unable access the service object");
             return applicationObject.ActiveDocument.FullName;
         }
@@ -107,7 +130,7 @@ namespace VersionUp.V2
         /// <param name="build">The value for the build item.</param>
         private void UpVersion(int feature = 0, int bugfix = 0, int build = 0)
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
             Project selProject = GetSelectedProject();
             string title = "VersionUp V2";
             string message = "Please select the project!";
@@ -178,7 +201,7 @@ namespace VersionUp.V2
         /// <returns>Selected project or null.</returns>
         private Project GetSelectedProject()
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
             IntPtr hierarchyPointer, selectionContainerPointer;
             Object selectedObject = null;
             IVsMultiItemSelect multiItemSelect;
@@ -226,19 +249,19 @@ namespace VersionUp.V2
         /// <param name="e">Event args.</param>
         private void MenuFeatureCallback(object sender, EventArgs e)
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
             this.UpVersion(feature: 1);
         }
 
         private void MenuBugFixCallback(object sender, EventArgs e)
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
             this.UpVersion(bugfix: 1);
         }
 
         private void MenuBuildCallback(object sender, EventArgs e)
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
             this.UpVersion(build: 1);
         }
     }
