@@ -39,7 +39,20 @@
 			<Group guid="guidContextMenuPackageCmdSet" id="VersionUpContextMenuGroup" priority="0x0600">
 				<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
 			</Group>
+
+      <Group guid="guidContextMenuPackageCmdSet" id="CommandsMenuGroup" priority="0x0300">
+        <Parent guid="guidContextMenuPackageCmdSet" id="MainMenu"/>
+      </Group>
 		</Groups>
+
+    <Menus>
+      <Menu guid="guidContextMenuPackageCmdSet" id="MainMenu" priority="0x0100" type="Menu">
+        <Parent guid="guidContextMenuPackageCmdSet" id="VersionUpContextMenuGroup" />
+        <Strings>
+          <ButtonText>Поднять версию проекта</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
 
 		<!--Buttons section. -->
 		<!--This section defines the elements the user can interact with, like a menu command or a button
@@ -52,26 +65,33 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-			<Button guid="guidContextMenuPackageCmdSet" id="ContextMenuFeature" priority="0x0100" type="Button">
-				<Parent guid="guidContextMenuPackageCmdSet" id="VersionUpContextMenuGroup" />
+      <Button guid="guidContextMenuPackageCmdSet" id="ContextMenuMajor" priority="0x0099" type="Button">
+        <Parent guid="guidContextMenuPackageCmdSet" id="CommandsMenuGroup" />
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Мажорную</ButtonText>
+        </Strings>
+      </Button>
+			<Button guid="guidContextMenuPackageCmdSet" id="ContextMenuMinor" priority="0x0100" type="Button">
+				<Parent guid="guidContextMenuPackageCmdSet" id="CommandsMenuGroup" />
 				<!--<Icon guid="guidImages" id="bmpPic1" />-->
-				<CommandFlag>DynamicVisibility</CommandFlag>
+				<!--<CommandFlag>DynamicVisibility</CommandFlag>-->
 				<Strings>
-					<ButtonText>x.+1.x.x</ButtonText>
+					<ButtonText>Минорную</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="guidContextMenuPackageCmdSet" id="ContextMenuBugFix" priority="0x0200" type="Button">
-				<Parent guid="guidContextMenuPackageCmdSet" id="VersionUpContextMenuGroup" />
+			<Button guid="guidContextMenuPackageCmdSet" id="ContextMenuBuild" priority="0x0200" type="Button">
+				<Parent guid="guidContextMenuPackageCmdSet" id="CommandsMenuGroup" />
 				<!--<Icon guid="guidImages" id="bmpPic1" />-->
 				<Strings>
-					<ButtonText>x.x.+1.x</ButtonText>
+					<ButtonText>Сборки</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="guidContextMenuPackageCmdSet" id="ContextMenuBuild" priority="0x0300" type="Button">
-				<Parent guid="guidContextMenuPackageCmdSet" id="VersionUpContextMenuGroup" />
+			<Button guid="guidContextMenuPackageCmdSet" id="ContextMenuRevision" priority="0x0300" type="Button">
+				<Parent guid="guidContextMenuPackageCmdSet" id="CommandsMenuGroup" />
 				<!--<Icon guid="guidImages" id="bmpPic1" />-->
 				<Strings>
-					<ButtonText>x.x.x.+1</ButtonText>
+					<ButtonText>Ревизии</ButtonText>
 				</Strings>
 			</Button>
 		</Buttons>
@@ -94,9 +114,12 @@
 		<!-- This is the guid used to group the menu commands together -->
 		<GuidSymbol name="guidContextMenuPackageCmdSet" value="{a8031b27-b8a1-4683-9f1e-b1b86f6f237a}">
 			<IDSymbol name="VersionUpContextMenuGroup" value="0x1020" />
-			<IDSymbol name="ContextMenuFeature" value="0x0100" />
-			<IDSymbol name="ContextMenuBugFix" value="0x0200" />
-			<IDSymbol name="ContextMenuBuild" value="0x0300" />
+			<IDSymbol name="CommandsMenuGroup" value="0x1021" />
+      <IDSymbol name="MainMenu" value="0x1022" />
+      <IDSymbol name="ContextMenuMajor" value="0x0099" />
+			<IDSymbol name="ContextMenuMinor" value="0x0100" />
+			<IDSymbol name="ContextMenuBuild" value="0x0200" />
+			<IDSymbol name="ContextMenuRevision" value="0x0300" />
 		</GuidSymbol>
 
 		<GuidSymbol name="guidImages" value="{5d3c1f47-39e4-42f9-b40e-5a1de657e46a}" >
