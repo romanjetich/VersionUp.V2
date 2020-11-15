@@ -143,22 +143,22 @@ namespace VersionUp.V2
                 try
                 {                   
                     assemblyVersion = new Version(selProject.Properties.Item("AssemblyVersion").Value.ToString());
-                    //var PackageTags = selProject.Properties.Item("PackageTags").Value;
-                    //var Product = selProject.Properties.Item("Product").Value;
-                    //var LocalPath = selProject.Properties.Item("LocalPath").Value;
-                    //var SupportedTargetFrameworks = selProject.Properties.Item("SupportedTargetFrameworks").Value;
-                    //var FullPath = selProject.Properties.Item("FullPath").Value;
-                    //var Version = selProject.Properties.Item("Version").Value;
-                    //var TargetFrameworkMoniker = selProject.Properties.Item("TargetFrameworkMoniker").Value;
-                    //var FileVersion = selProject.Properties.Item("FileVersion").Value;
-                    //var TargetFramework = selProject.Properties.Item("TargetFramework").Value;
-                    //var TargetFrameworks = selProject.Properties.Item("TargetFrameworks").Value;
 
 
-                    int buildItem = assemblyVersion.Revision + build;
                     int bugfixItem = assemblyVersion.Build + bugfix;
+                    int buildItem = assemblyVersion.Revision + build;
                     int featureItem = assemblyVersion.Minor + feature;
- 
+                    if(feature > 0)
+                    {
+                        bugfixItem = 0;
+                        buildItem = 0;
+                    }
+                    else if(bugfix > 0)
+                    {
+                        buildItem = 0;
+                    }
+                    
+
                     newAssemblyVersion = $"{assemblyVersion.Major}.{featureItem}.{bugfixItem}.{buildItem}";
                     selProject.Properties.Item("AssemblyVersion").Value = newAssemblyVersion;
                     try
