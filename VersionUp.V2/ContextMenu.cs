@@ -20,9 +20,18 @@ namespace VersionUp.V2
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandFeature = 0x0100;
-        public const int CommandBugFix = 0x0200;
+        public const int CommandMajor = 0x0100;
+        public const int CommandMinor = 0x0200;
         public const int CommandBuild = 0x0300;
+        public const int CommandRevision = 0x0400;
+
+        public enum VersionTypes
+        {
+            Major,
+            Minor,
+            Build,
+            Revision
+        }
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -47,22 +56,6 @@ namespace VersionUp.V2
             }
 
             this.package = package;
-
-            //OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            //if (commandService != null)
-            //{
-            //    var menuCommandFeature = new CommandID(CommandSet, CommandFeature);
-            //    var menuFeature = new MenuCommand(this.MenuFeatureCallback, menuCommandFeature);
-            //    commandService.AddCommand(menuFeature);
-
-            //    var menuCommandBugFix = new CommandID(CommandSet, CommandBugFix);
-            //    var menuBugFix = new MenuCommand(this.MenuBugFixCallback, menuCommandBugFix);
-            //    commandService.AddCommand(menuBugFix);
-
-            //    var menuCommandBuild = new CommandID(CommandSet, CommandBuild);
-            //    var menuBuild = new MenuCommand(this.MenuBuildCallback, menuCommandBuild);
-            //    commandService.AddCommand(menuBuild);
-            //}
         }
 
         public async Task InitializeMenuAsync(AsyncPackage package)
@@ -72,17 +65,21 @@ namespace VersionUp.V2
 
             if (commandService != null)
             {
-                var menuCommandFeature = new CommandID(CommandSet, CommandFeature);
-                var menuFeature = new MenuCommand(this.MenuFeatureCallback, menuCommandFeature);
-                commandService.AddCommand(menuFeature);
+                var menuCommandMajor = new CommandID(CommandSet, CommandMajor);
+                var menuMajor = new MenuCommand(this.MenuMajorCallback, menuCommandMajor);
+                commandService.AddCommand(menuMajor);
 
-                var menuCommandBugFix = new CommandID(CommandSet, CommandBugFix);
-                var menuBugFix = new MenuCommand(this.MenuBugFixCallback, menuCommandBugFix);
-                commandService.AddCommand(menuBugFix);
+                var menuCommandMinor = new CommandID(CommandSet, CommandMinor);
+                var menuMinor = new MenuCommand(this.MenuMinorCallback, menuCommandMinor);
+                commandService.AddCommand(menuMinor);
 
                 var menuCommandBuild = new CommandID(CommandSet, CommandBuild);
                 var menuBuild = new MenuCommand(this.MenuBuildCallback, menuCommandBuild);
                 commandService.AddCommand(menuBuild);
+
+                var menuCommandRevision = new CommandID(CommandSet, CommandRevision);
+                var menuRevision = new MenuCommand(this.MenuRevisionCallback, menuCommandRevision);
+                commandService.AddCommand(menuRevision);
             }
         }
 
@@ -128,7 +125,7 @@ namespace VersionUp.V2
         /// <param name="feature">The value for the feature item.</param>
         /// <param name="bugfix">The value for the bug fix item.</param>
         /// <param name="build">The value for the build item.</param>
-        private void UpVersion(int feature = 0, int bugfix = 0, int build = 0)
+        private void UpVersion(VersionTypes versionType)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             Project selProject = GetSelectedProject();
@@ -139,27 +136,36 @@ namespace VersionUp.V2
 
             if (selProject != null)
             {
-                int count = selProject.Properties.Count;
                 try
                 {                   
                     assemblyVersion = new Version(selProject.Properties.Item("AssemblyVersion").Value.ToString());
 
+                    int major = 0, minor = 0, revision = 0, build = 0;
 
-                    int bugfixItem = assemblyVersion.Build + bugfix;
-                    int buildItem = assemblyVersion.Revision + build;
-                    int featureItem = assemblyVersion.Minor + feature;
-                    if(feature > 0)
+                    switch(versionType)
                     {
-                        bugfixItem = 0;
-                        buildItem = 0;
-                    }
-                    else if(bugfix > 0)
-                    {
-                        buildItem = 0;
+                        case VersionTypes.Major:
+                            major = assemblyVersion.Major + 1;
+                            break;
+                        case VersionTypes.Minor:
+                            major = assemblyVersion.Major;
+                            minor = assemblyVersion.Minor + 1;
+                            break;
+                        case VersionTypes.Build:
+                            major = assemblyVersion.Major;
+                            minor = assemblyVersion.Minor;
+                            build = assemblyVersion.Build + 1;
+                            break;
+                        default:
+                            major = assemblyVersion.Major;
+                            minor = assemblyVersion.Minor;
+                            build = assemblyVersion.Build;
+                            revision = assemblyVersion.Revision + 1;
+                            break;
                     }
                     
 
-                    newAssemblyVersion = $"{assemblyVersion.Major}.{featureItem}.{bugfixItem}.{buildItem}";
+                    newAssemblyVersion = $"{major}.{minor}.{build}.{revision}";
                     selProject.Properties.Item("AssemblyVersion").Value = newAssemblyVersion;
                     try
                     {
@@ -247,22 +253,28 @@ namespace VersionUp.V2
         /// </summary>
         /// <param name="sender">Event sender.</param>
         /// <param name="e">Event args.</param>
-        private void MenuFeatureCallback(object sender, EventArgs e)
+        private void MenuMinorCallback(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            this.UpVersion(feature: 1);
+            this.UpVersion(VersionTypes.Minor);
         }
 
-        private void MenuBugFixCallback(object sender, EventArgs e)
+        private void MenuMajorCallback(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            this.UpVersion(bugfix: 1);
+            this.UpVersion(VersionTypes.Major);
         }
 
         private void MenuBuildCallback(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            this.UpVersion(build: 1);
+            this.UpVersion(VersionTypes.Build);
+        }
+
+        private void MenuRevisionCallback(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            this.UpVersion(VersionTypes.Revision);
         }
     }
 }
