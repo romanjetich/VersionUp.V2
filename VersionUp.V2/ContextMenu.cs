@@ -1,20 +1,20 @@
 ﻿using System;
-using System.ComponentModel.Design;
-using System.Globalization;
+//using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft;
 using EnvDTE80;
 using Task = System.Threading.Tasks.Task;
+using System.ComponentModel.Design;
 
 namespace VersionUp.V2
 {
     /// <summary>
     /// Command handler
     /// </summary>
+    [GuidAttribute("9ED54F84-A89D-4fcd-A854-44251E925F09")]
     internal sealed class ContextMenu
     {
         /// <summary>
